@@ -1,0 +1,45 @@
+# docker-compose.yml
+version: "3.8"
+
+services:
+  shellshock:
+    # By default this uses the published upstream image.
+    image: jsimao/cs-shellshock:latest
+
+    # If you prefer to build from a local Dockerfile that references a base image
+    # (e.g. to choose arm64 or modify behavior), uncomment the build section
+    # below and optionally remove or keep the image line (build will tag image).
+    #
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    #   args:
+    #     BASE_IMAGE: jsimao/seed-shellshock-amd64   # or jsimao/seed-shellshock-arm64
+
+    container_name: shellshock
+    ports:
+      - "8080:80"         # host:container -> access at http://localhost:8080/
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+
+    # Optional: limit resources (uncomment and tune if desired)
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.50'
+    #       memory: 512M
+
+    # Healthcheck: check that the CGI endpoint returns HTTP 200.
+    # Note: healthcheck runs inside the container; the container must have curl or wget.
+    # If curl isn't present, the check will fail — remove or adapt as needed.
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1/cgi-bin/getenv.cgi || curl -f http://127.0.0.1/cgi-bin/vul.cgi || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+    # Optional: mount a directory if you want to add/inspect files
+    # volumes:
+    #   - ./data:/data:rw
