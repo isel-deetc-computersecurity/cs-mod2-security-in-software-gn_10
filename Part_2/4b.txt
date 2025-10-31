@@ -1,0 +1,17 @@
+## Estrutura JWT (JSON Web Token)
+
+Um JWT é composto por três partes separadas por pontos (.). A primeira parte é o header, que contém metadados sobre o token, incluindo o tipo e o algoritmo de assinatura. A segunda parte é o payload que contém as claims, ou seja, que contém os dados e informações do utilizador. A terceira parte é a signature, que consiste numa combinação do header codificado, o payload codificado e uma chave secreta, processados através de um algoritmo criptográfico que garante a integridade e autenticidade do token. O formato final é header.payload.signature, onde cada parte é codificada em Base64-URL.
+
+## Uso da Password no Código
+
+O código define duas passwords constantes. A primeira é `PASSWORD = "bm5nhSkxCXZkKRy4"`, que é usada apenas para autenticação de login. A segunda é `JWT_PASSWORD = "bm5n3SkxCX4kKRy4"`, e esta é a password crítica usada em todas as operações JWT.
+
+A `JWT_PASSWORD` aparece em três locais distintos no código. Primeiro, no método `createNewTokens`, onde é utilizada para assinar o token através do método `signWith`, que recebe o algoritmo HS512 e a password. Segundo, no método `checkout`, onde é usada como chave de verificação através do método `setSigningKey` do parser de JWT. Terceiro, no método `newToken`, onde novamente serve para validar tokens através do mesmo mecanismo de parsing.
+
+## Operação Criptográfica que Depende da Password
+
+A operação criptográfica utilizada é o HMAC-SHA512, representado pelo algoritmo HS512. O HMAC (Hash-based Message Authentication Code) é um algoritmo de autenticação que combina uma função hash criptográfica com uma chave secreta. No caso específico do HS512, a função hash utilizada é a SHA-512.
+
+A `JWT_PASSWORD` funciona como a chave secreta simétrica em todo este processo. Quando um token é criado, o servidor combina o header e o payload codificados com a `JWT_PASSWORD` usando o algoritmo HMAC-SHA512 para gerar uma assinatura digital. Esta assinatura é então anexada ao token. Quando o token precisa de ser verificado, a mesma password é usada para recalcular a assinatura e compará-la com a assinatura presente no token. Qualquer alteração no header ou no payload, sem conhecimento da password, resultará numa assinatura inválida e o token será rejeitado.
+
+Trata-se de uma assinatura simétrica, onde a mesma chave é usada tanto para assinar como para verificar o token, ao contrário de algoritmos assimétricos como o RS256 que utilizam pares de chaves pública e privada distintas.

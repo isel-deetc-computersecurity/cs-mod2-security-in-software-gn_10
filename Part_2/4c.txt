@@ -1,0 +1,10 @@
+Se um atacante conseguir aceder ao código fonte e descobrir a JWT_PASSWORD, pode comprometer completamente a segurança do sistema.
+Falsificação de Tokens
+Como a password é a chave secreta usada no algoritmo HMAC-SHA512, o atacante pode criar tokens JWT completamente válidos para qualquer utilizador. O servidor aceita estes tokens forjados como legítimos porque a assinatura é matematicamente correta, não havendo forma de distinguir tokens genuínos de falsificados.
+Escalada de Privilégios
+O atacante pode manipular as claims dentro do token, como alterar "admin": "false" para "admin": "true", e assinar o token modificado com a password comprometida. Isto concede-lhe privilégios administrativos imediatos, contornando todos os controlos de autorização do sistema.
+Personificação de Qualquer Utilizador
+Observando o código, o endpoint checkout verifica se o utilizador é "Tom" para permitir certas operações. O atacante pode simplesmente criar um token com "user": "Tom" e aceder a funcionalidades restritas a esse utilizador específico. Este princípio aplica-se a qualquer utilizador do sistema.
+Bypass de Mecanismos de Segurança
+O atacante pode criar tokens com datas de validade arbitrárias, eliminando controlos de expiração. Além disso, pode contornar completamente o sistema de refresh tokens, gerando novos access tokens válidos sempre que necessário, mantendo acesso persistente ao sistema independentemente de revogações ou alterações de passwords legítimas.
+Em suma, conhecer a password JWT anula totalmente o sistema de autenticação e autorização baseado em tokens, permitindo ao atacante assumir qualquer identidade e privilégio no sistema.
